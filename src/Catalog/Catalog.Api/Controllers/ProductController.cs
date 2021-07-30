@@ -66,7 +66,7 @@ namespace Catalog.Api.Controllers
 
         // POST api/<CatalogController>
         [HttpPost]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<Product>> Post([FromBody] Product item)
         {
             var id = await _repos.Insert(item);

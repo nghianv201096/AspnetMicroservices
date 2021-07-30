@@ -1,9 +1,9 @@
-using Catalog.Api.Datas;
-using Catalog.Api.Datas.Interfaces;
-using Catalog.Api.Reposes;
-using Catalog.Api.Reposes.Interfaces;
+using Basket.Api.Reposes;
+using Basket.Api.Reposes.Interfaces;
+using Basket.Api.Utilities.Constants;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Catalog.Api
+namespace Basket
 {
     public class Startup
     {
@@ -29,15 +29,17 @@ namespace Catalog.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddStackExchangeRedisCache(options => {
+                options.Configuration = Configuration.GetValue<string>(Constants.BASKET_DB_CONN_STRING);
+            });
+
+            services.AddScoped<IBasketRepos, BasketRepos>();
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Catalog.Api", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Basket", Version = "v1" });
             });
-
-            services.AddScoped<ICatalogContext, CatalogContext>();
-
-            services.AddScoped<IProductRepos, ProductRepos>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,8 +49,10 @@ namespace Catalog.Api
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Catalog.Api v1 by NghiaNV"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Basket v1"));
             }
+
+            app.UseHttpsRedirection();
 
             app.UseRouting();
 
