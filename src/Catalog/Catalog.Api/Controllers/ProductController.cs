@@ -89,5 +89,11 @@ namespace Catalog.Api.Controllers
         {
             return Ok(await _repos.Delete(id));
         }
+
+        [HttpGet]
+        [Route("/ping")]
+        public ActionResult<string> Ping() {
+            return Ok("pong");
+        }
     }
 }
